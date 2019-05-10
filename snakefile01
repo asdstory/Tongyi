@@ -1,0 +1,23 @@
+
+# AUTHOR: DouTY
+
+'''
+This pipeline for ChIP-Seq data analysis, which goes from fastq to bam and bam.bai, ready for igv visualization.
+for single-end ChIP-Seq data, and requires a reference index.
+'''
+
+samples = 'FoxA1 Input 298-301'
+
+rule all:
+    input:
+        expand('/home/dell/DouTY/FoxA1/{sample}.fq', sample=samples.split(' '))
+
+rule bowtie_map:
+    input:
+        index = '/home/dell/RefGenome/hg19ebwt/hg19',
+        fq = '/home/dell/DouTY/FoxA1/{sample}.fq'
+    output:
+        o1 = '/home/dell/DouTY/FoxA1/mapped_reads/{sample}.out',
+        o2 = '/home/dell/DouTY/FoxA1/mapped_reads/{sample}.sam',
+    shell:
+        'bowtie -m 1 -5 10 -3 10 -p 32 -s {input.index} -q {input.fq} 2> {output.o1} >{output.o2}'
